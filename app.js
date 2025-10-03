@@ -1,29 +1,3 @@
-// app.post("/create-checkout-session", async (req, res) => {
-//   const { items } = req.body;
-
-//   try {
-//     const session = await stripe.checkout.sessions.create({
-//       payment_method_types: ["card"],
-//       line_items: items.map((item) => ({
-//         price_data: {
-//           currency: "usd",
-//           product_data: { name: item.title },
-//           unit_amount: item.price * 100,
-//         },
-//         quantity: item.quantity,
-//       })),
-//       mode: "payment",
-//       success_url: "http://localhost:3000/success",
-//       cancel_url: "http://localhost:3000/cancel",
-//     });
-
-//     res.json({ id: session.id });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-// MADE WITH CHATGPT ^^^^ Replace with own code ^^^
-
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
