@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const ArtItem = require("../models/artItem");
 
 // GET all art items
