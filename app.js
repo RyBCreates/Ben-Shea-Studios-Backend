@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const stripe = require("stripe");
+// const stripe = require("stripe");
 // const { errors } = require("celebrate");
 const mainRouter = require("./routes/index");
 // const errorHandler = require("./middlewares/errorHandler");
