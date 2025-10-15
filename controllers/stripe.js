@@ -4,9 +4,9 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createCheckout = async (req, res) => {
   try {
-    const { cartItems } = req.body;
+    const { cartList } = req.body;
 
-    const line_items = cartItems.map((item) => ({
+    const line_items = cartList.map((item) => ({
       price_data: {
         currency: "usd",
         product_data: {
