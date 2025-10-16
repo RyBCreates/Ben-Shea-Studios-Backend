@@ -31,13 +31,20 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
       { status },
       { new: true }
     );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
     res.json(updatedOrder);
   } catch (err) {
+    console.error("Error updating order status:", err);
     res.status(500).json({ error: "Failed to update order status" });
   }
 };
