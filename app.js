@@ -23,7 +23,12 @@ app.use("/", mainRouter);
 // app.use(errors());
 // app.use(errorHandler);
 
-mongoose.connect("mongodb://127.0.0.1:27017/ben-shea-studios_db");
+mongoose
+  .connect(
+    process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ben-shea-studios_db"
+  )
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 app.listen(PORT, () => {
   console.log(`Hello, from Port: ${PORT}`);

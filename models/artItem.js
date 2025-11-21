@@ -8,6 +8,26 @@ const artItemSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  categories: {
+    type: [String],
+    required: true,
+    validate: {
+      validator: (arr) =>
+        arr.length > 0 &&
+        arr.every((cat) =>
+          [
+            "landscape",
+            "abstract",
+            "people",
+            "pets",
+            "sketch",
+            "photo",
+            "print",
+          ].includes(cat)
+        ),
+      message: "Invalid category",
+    },
+  },
   images: {
     type: [String],
     validate: [
