@@ -28,31 +28,44 @@ const signupForDiscount = async (req, res) => {
       discountCode,
     });
 
+    // Setup transporter
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465, // SSL port
-      secure: true, // use SSL
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        pass: process.env.MAIL_PASS, // App password for Gmail
       },
-      logger: true,
-      debug: true,
     });
 
+    // Verify SMTP connection
     transporter.verify((error, success) => {
       if (error) console.error("SMTP verify error:", error);
-      else console.log("Server is ready to take messages");
+      else console.log("SMTP server is ready to send messages");
     });
 
-    await transporter.sendMail({
-      from: `"Ben Shea Studios" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: "Your 25% Discount Code",
-      text: `Thanks for signing up! Your 25% discount code is: ${discountCode}`,
-    });
+    let emailSent = false;
 
-    return res.json({ message: "Discount email sent!" });
+    try {
+      await transporter.sendMail({
+        from: `"Ben Shea Studios" <${process.env.MAIL_USER}>`,
+        to: email,
+        subject: "Your 25% Discount Code",
+        text: `Thanks for signing up! Your 25% discount code is: ${discountCode}`,
+      });
+      emailSent = true;
+      console.log(`Discount email sent to ${email}`);
+    } catch (mailErr) {
+      console.error("Failed to send discount email:", mailErr);
+    }
+
+    // Respond regardless of email success
+    return res.json({
+      message: emailSent
+        ? "Discount email sent!"
+        : "Saved to database, but email could not be sent. Check server logs.",
+    });
   } catch (err) {
     console.error("Signup error:", err);
     res.status(500).json({ error: "Server error" });
