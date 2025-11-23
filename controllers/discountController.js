@@ -2,7 +2,7 @@ const Discount = require("../models/discount.js");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-// POST /discount/signup
+// Signup for email list and get discount
 const signupForDiscount = async (req, res) => {
   try {
     const { firstName, lastName, email } = req.body;
@@ -11,7 +11,6 @@ const signupForDiscount = async (req, res) => {
       return res.status(400).json({ error: "Email required" });
     }
 
-    // Check for existing email
     const existing = await Discount.findOne({ email });
 
     if (existing) {
@@ -20,10 +19,8 @@ const signupForDiscount = async (req, res) => {
         .json({ error: "This email has already received a code." });
     }
 
-    // Generate discount code
     const discountCode = crypto.randomBytes(3).toString("hex").toUpperCase();
 
-    // Save entry
     await Discount.create({
       firstName,
       lastName,
@@ -31,13 +28,21 @@ const signupForDiscount = async (req, res) => {
       discountCode,
     });
 
-    // Send email
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465, // SSL port
+      secure: true, // use SSL
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
+      logger: true,
+      debug: true,
+    });
+
+    transporter.verify((error, success) => {
+      if (error) console.error("SMTP verify error:", error);
+      else console.log("Server is ready to take messages");
     });
 
     await transporter.sendMail({
@@ -54,7 +59,7 @@ const signupForDiscount = async (req, res) => {
   }
 };
 
-// GET /discount/emails (ADMIN ONLY)
+// Get the list of emails from the admin side
 const getAllDiscountEmails = async (req, res) => {
   try {
     const key = req.headers["x-admin-key"];
