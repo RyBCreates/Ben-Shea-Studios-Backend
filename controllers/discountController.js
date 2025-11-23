@@ -35,7 +35,7 @@ const signupForDiscount = async (req, res) => {
       secure: true,
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS, // App password for Gmail
+        pass: process.env.MAIL_PASS, 
       },
     });
 
