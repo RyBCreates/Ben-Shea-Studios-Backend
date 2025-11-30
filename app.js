@@ -1,4 +1,13 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+
+const envFile = process.env.NODE_ENV === "development" ? ".env.local" : ".env";
+dotenv.config({ path: envFile });
+
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("MAIL_USER:", process.env.MAIL_USER);
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
+console.log("Using DB:", process.env.MONGODB_URI);
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -9,7 +18,7 @@ const mainRouter = require("./routes/index");
 
 const app = express();
 
-const { PORT = 4000 } = process.env;
+const PORT = process.env.PORT;
 
 // app.use(requestLogger);
 
@@ -24,9 +33,7 @@ app.use("/", mainRouter);
 // app.use(errorHandler);
 
 mongoose
-  .connect(
-    process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ben-shea-studios_db"
-  )
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 

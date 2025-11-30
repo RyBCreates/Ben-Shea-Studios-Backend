@@ -1,11 +1,26 @@
 const Order = require("../models/order");
 
 const createOrder = async (req, res) => {
+  console.log("✅ createOrder called");
+  console.log("Request body:", req.body);
   try {
-    const { customerInfo, cartList, totalAmount, stripeSessionId } = req.body;
+    const { customerInfo, cartList, stripeSessionId } = req.body;
+
+    const subtotal = cartList.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    const TAX_RATE = 0.07;
+    const tax = Number((subtotal * TAX_RATE).toFixed(2));
+
+    const totalAmount = Number((subtotal + tax).toFixed(2));
+
     const newOrder = await Order.create({
       ...customerInfo,
       cartList,
+      subtotal,
+      tax,
       totalAmount,
       stripeSessionId,
       status: "pending",

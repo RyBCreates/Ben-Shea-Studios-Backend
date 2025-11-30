@@ -6,6 +6,7 @@ const orderSchema = new mongoose.Schema(
     email: { type: String },
     phone: { type: String },
     address: { type: String },
+    discountCode: { type: String },
     instructions: { type: String },
     cartList: [
       {
@@ -15,6 +16,8 @@ const orderSchema = new mongoose.Schema(
         image: String,
       },
     ],
+    subtotal: Number,
+    tax: Number,
     totalAmount: Number,
     status: {
       type: String,
