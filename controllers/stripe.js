@@ -1,5 +1,4 @@
 const Stripe = require("stripe");
-
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createCheckout = async (req, res) => {
@@ -18,12 +17,18 @@ const createCheckout = async (req, res) => {
       quantity: item.quantity,
     }));
 
+    const isDev = process.env.NODE_ENV === "development";
+
+    const frontendBaseUrl = isDev
+      ? "http://localhost:5173"
+      : "https://ben-shea-studios.vercel.app";
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
-      success_url: "https://ben-shea-studios.vercel.app//success",
-      cancel_url: "https://ben-shea-studios.vercel.app//cancel",
+      success_url: `${frontendBaseUrl}/success`,
+      cancel_url: `${frontendBaseUrl}/cancel`,
     });
 
     res.json({ url: session.url });

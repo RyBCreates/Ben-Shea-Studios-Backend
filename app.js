@@ -23,8 +23,15 @@ const PORT = process.env.PORT;
 // app.use(requestLogger);
 
 app.use(express.json());
-app.use(cors());
-
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:5173"
+        : "https://ben-shea-studios.vercel.app",
+    credentials: true,
+  })
+);
 app.use("/", mainRouter);
 
 // app.use(errorLogger);
