@@ -5,17 +5,31 @@ const createCheckout = async (req, res) => {
   try {
     const { cartList } = req.body;
 
-    const line_items = cartList.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: item.title,
-          images: [item.image],
+    const subtotal = cartList.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    const TAX_RATE = 0.07;
+    const tax = Number((subtotal * TAX_RATE).toFixed(2));
+
+    const line_items = [
+      ...cartList.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: { name: item.title, images: [item.image] },
+          unit_amount: Math.round(item.price * 100),
         },
-        unit_amount: Math.round(item.price * 100),
+        quantity: item.quantity,
+      })),
+      {
+        price_data: {
+          currency: "usd",
+          product_data: { name: "Tax" },
+          unit_amount: Math.round(tax * 100),
+        },
+        quantity: 1,
       },
-      quantity: item.quantity,
-    }));
+    ];
 
     const isDev = process.env.NODE_ENV === "development";
 
