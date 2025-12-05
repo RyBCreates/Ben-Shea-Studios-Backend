@@ -35,15 +35,13 @@ const signupForDiscount = async (req, res) => {
       secure: true,
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS, 
+        pass: process.env.MAIL_PASS,
       },
     });
 
     // Verify SMTP connection
-    transporter.verify((error, success) => {
-      if (error) console.error("SMTP verify error:", error);
-      else console.log("SMTP server is ready to send messages");
-    });
+    await transporter.verify();
+    console.log("SMTP ready");
 
     let emailSent = false;
 

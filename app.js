@@ -6,7 +6,6 @@ dotenv.config({ path: envFile });
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("MAIL_USER:", process.env.MAIL_USER);
 console.log("MONGODB_URI:", process.env.MONGODB_URI);
-console.log("Using DB:", process.env.MONGODB_URI);
 
 const express = require("express");
 const mongoose = require("mongoose");

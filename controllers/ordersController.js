@@ -1,8 +1,6 @@
 const Order = require("../models/order");
 
 const createOrder = async (req, res) => {
-  console.log("✅ createOrder called");
-  console.log("Request body:", req.body);
   try {
     const { customerInfo, cartList, stripeSessionId } = req.body;
 
