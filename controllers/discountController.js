@@ -86,7 +86,37 @@ const getAllDiscountEmails = async (req, res) => {
   }
 };
 
+// Validate a discount code
+const validateDiscountCode = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ error: "Discount code required" });
+    }
+
+    const discount = await Discount.findOne({
+      discountCode: code.toUpperCase(),
+    });
+
+    if (!discount) {
+      return res.status(404).json({ error: "Invalid discount code" });
+    }
+
+    // If found, return success + discount info
+    return res.json({
+      valid: true,
+      discount: 25, // or whatever your % is
+      message: "Discount code applied!",
+    });
+  } catch (err) {
+    console.error("Discount validation error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
   signupForDiscount,
   getAllDiscountEmails,
+  validateDiscountCode,
 };

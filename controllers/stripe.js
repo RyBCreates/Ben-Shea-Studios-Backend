@@ -3,14 +3,16 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createCheckout = async (req, res) => {
   try {
-    const { cartList } = req.body;
+    const { cartList, discountValue } = req.body;
 
-    const subtotal = cartList.reduce(
+    const totalAmount = cartList.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
+
+    const discountedTotal = totalAmount * (1 - discountValue / 100);
     const TAX_RATE = 0.07;
-    const tax = Number((subtotal * TAX_RATE).toFixed(2));
+    const tax = Number((discountedTotal * TAX_RATE).toFixed(2));
 
     const line_items = [
       ...cartList.map((item) => ({
