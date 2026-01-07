@@ -37,7 +37,7 @@ const createCheckout = async (req, res) => {
 
     const frontendBaseUrl = isDev
       ? "http://localhost:5173"
-      : "https://ben-shea-studios.vercel.app";
+      : "https://bensheastudio.com";
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

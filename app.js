@@ -27,7 +27,7 @@ app.use(
     origin:
       process.env.NODE_ENV === "development"
         ? "http://localhost:5173"
-        : "https://ben-shea-studios.vercel.app",
+        : "https://bensheastudio.com",
     credentials: true,
   })
 );
