@@ -22,12 +22,22 @@ const PORT = process.env.PORT;
 // app.use(requestLogger);
 
 app.use(express.json());
+const allowedOrigins =
+  process.env.NODE_ENV === "development"
+    ? ["http://localhost:5173"]
+    : ["https://bensheastudio.com", "https://www.bensheastudio.com"];
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:5173"
-        : "https://bensheastudio.com",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
