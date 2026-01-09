@@ -103,10 +103,9 @@ const validateDiscountCode = async (req, res) => {
       return res.status(404).json({ error: "Invalid discount code" });
     }
 
-    // If found, return success + discount info
     return res.json({
       valid: true,
-      discount: 25, // or whatever your % is
+      discount: 25,
       message: "Discount code applied!",
     });
   } catch (err) {
