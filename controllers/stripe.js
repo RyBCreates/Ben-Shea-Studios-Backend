@@ -5,6 +5,8 @@ const createCheckout = async (req, res) => {
   try {
     const { cartList, discountValue } = req.body;
 
+    console.log("💳 Checkout request received. Cart list:", cartList);
+
     const totalAmount = cartList.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
@@ -13,6 +15,13 @@ const createCheckout = async (req, res) => {
     const discountedTotal = totalAmount * (1 - discountValue / 100);
     const TAX_RATE = 0.07;
     const tax = Number((discountedTotal * TAX_RATE).toFixed(2));
+
+    const originalItemIds = cartList
+      .filter((item) => item.version === "original")
+      .map((item) => item._id)
+      .join(",");
+
+    console.log("📝 Original item IDs being sent to Stripe:", originalItemIds);
 
     const line_items = [
       ...cartList.map((item) => ({
@@ -39,21 +48,29 @@ const createCheckout = async (req, res) => {
       ? "http://localhost:5173"
       : "https://bensheastudio.com";
 
+    const metadata =
+      typeof originalItemIds === "string" && originalItemIds.length > 0
+        ? { originalItemIds }
+        : {};
+
+    console.log("🧪 Metadata being sent to Stripe:", metadata);
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
+      metadata, // only non-empty
       success_url: `${frontendBaseUrl}/success`,
       cancel_url: `${frontendBaseUrl}/cancel`,
     });
 
+    console.log("✅ Stripe session created:", session.id);
+
     res.json({ url: session.url });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Stripe checkout failed:", err);
     res.status(500).json({ error: "Stripe checkout failed" });
   }
 };
 
-module.exports = {
-  createCheckout,
-};
+module.exports = { createCheckout };
