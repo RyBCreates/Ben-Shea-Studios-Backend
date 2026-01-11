@@ -10,7 +10,7 @@ const createCheckout = async (req, res) => {
     }
 
     const MAX_DISCOUNT = 25;
-    const TAX_RATE = 0.07; // 7% tax
+    const TAX_RATE = 0.07;
     const safeDiscount =
       typeof discountValue === "number"
         ? Math.min(Math.max(discountValue, 0), MAX_DISCOUNT)
@@ -68,7 +68,6 @@ const createCheckout = async (req, res) => {
       cancel_url: `${frontendBaseUrl}/cancel`,
     });
 
-    // ✅ Return sessionId instead of URL
     res.json({ url: session.url });
   } catch (err) {
     console.error("Stripe checkout failed:", err);

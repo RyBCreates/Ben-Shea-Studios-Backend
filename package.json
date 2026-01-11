@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-
   "scripts": {
-  "start": "cross-env NODE_ENV=production node app.js",
-  "dev": "cross-env NODE_ENV=development nodemon app.js",
+    "start": "cross-env NODE_ENV=production node app.js",
+    "dev": "cross-env NODE_ENV=development nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-
-},
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RyBCreates/Ben-Shea-Studios-Backend.git"
@@ -23,6 +21,7 @@
   },
   "homepage": "https://github.com/RyBCreates/Ben-Shea-Studios-Backend#readme",
   "dependencies": {
+    "@emailjs/nodejs": "^5.0.2",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

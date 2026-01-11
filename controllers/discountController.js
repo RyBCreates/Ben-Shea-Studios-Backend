@@ -1,24 +1,20 @@
 const Discount = require("../models/discount.js");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const emailjs = require("@emailjs/nodejs");
 
-// Signup for email list and get discount
 const signupForDiscount = async (req, res) => {
   try {
     const { firstName, lastName, email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: "Email required" });
-    }
+    if (!email) return res.status(400).json({ error: "Email required" });
 
     const existing = await Discount.findOne({ email });
-
-    if (existing) {
+    if (existing)
       return res
         .status(409)
         .json({ error: "This email has already received a code." });
-    }
 
+    // Generate a unique discount code
     const discountCode = crypto.randomBytes(3).toString("hex").toUpperCase();
 
     await Discount.create({
@@ -28,34 +24,29 @@ const signupForDiscount = async (req, res) => {
       discountCode,
     });
 
-    // Setup transporter
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-    });
-
-    // Verify SMTP connection
-    await transporter.verify();
-    console.log("SMTP ready");
+    // Prepare EmailJS parameters
+    const templateParams = {
+      firstName: firstName || "there",
+      discountCode,
+      email,
+    };
 
     let emailSent = false;
 
     try {
-      await transporter.sendMail({
-        from: `"Ben Shea Studios" <${process.env.MAIL_USER}>`,
-        to: email,
-        subject: "Your 25% Discount Code",
-        text: `Thanks for signing up! Your 25% discount code is: ${discountCode}`,
-      });
+      await emailjs.send(
+        process.env.EMAILJS_SERVICE_ID,
+        process.env.EMAILJS_TEMPLATE_ID,
+        templateParams,
+        {
+          publicKey: process.env.EMAILJS_PUBLIC_KEY,
+          privateKey: process.env.EMAILJS_PRIVATE_KEY,
+        }
+      );
       emailSent = true;
       console.log(`Discount email sent to ${email}`);
-    } catch (mailErr) {
-      console.error("Failed to send discount email:", mailErr);
+    } catch (err) {
+      console.error("Failed to send discount email via EmailJS:", err);
     }
 
     // Respond regardless of email success
@@ -70,13 +61,11 @@ const signupForDiscount = async (req, res) => {
   }
 };
 
-// Get the list of emails from the admin side
 const getAllDiscountEmails = async (req, res) => {
   try {
     const key = req.headers["x-admin-key"];
-    if (key !== process.env.ADMIN_KEY) {
+    if (key !== process.env.ADMIN_KEY)
       return res.status(401).json({ error: "Unauthorized" });
-    }
 
     const all = await Discount.find().sort({ createdAt: -1 });
     return res.json(all);
@@ -86,22 +75,16 @@ const getAllDiscountEmails = async (req, res) => {
   }
 };
 
-// Validate a discount code
 const validateDiscountCode = async (req, res) => {
   try {
     const { code } = req.body;
-
-    if (!code) {
-      return res.status(400).json({ error: "Discount code required" });
-    }
+    if (!code) return res.status(400).json({ error: "Discount code required" });
 
     const discount = await Discount.findOne({
       discountCode: code.toUpperCase(),
     });
-
-    if (!discount) {
+    if (!discount)
       return res.status(404).json({ error: "Invalid discount code" });
-    }
 
     return res.json({
       valid: true,
