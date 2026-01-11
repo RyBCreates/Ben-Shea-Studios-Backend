@@ -1,5 +1,6 @@
 const Stripe = require("stripe");
 const ArtItem = require("../models/artItem");
+const Order = require("../models/order");
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -22,6 +23,37 @@ const handleStripeWebhook = async (req, res) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
+
+    const orderId = session.metadata?.orderId;
+
+    if (!orderId) {
+      console.error("Missing orderId in Stripe metadata");
+      return res.json({ received: true });
+    }
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      console.error("Order not found:", orderId);
+      return res.json({ received: true });
+    }
+
+    if (order.status !== "paid" && session.payment_status === "paid") {
+      await Order.findByIdAndUpdate(orderId, {
+        status: "paid",
+        paidAt: new Date(),
+      });
+
+      const originalIds = session.metadata?.originalItemIds
+        ?.split(",")
+        .filter(Boolean);
+
+      if (originalIds?.length) {
+        await ArtItem.updateMany(
+          { _id: { $in: originalIds } },
+          { "original.sold": true }
+        );
+      }
+    }
 
     const originalIds = session.metadata?.originalItemIds
       ?.split(",")
