@@ -10,10 +10,14 @@ const orderSchema = new mongoose.Schema(
     instructions: { type: String },
     cartList: [
       {
-        title: String,
-        price: Number,
-        quantity: Number,
-        image: String,
+        _id: { type: String, required: true },
+        title: { type: String, required: true },
+        version: { type: String, required: true },
+        variantId: { type: String, required: true },
+        price: { type: Number, required: true },
+        dimensions: { type: String, required: true },
+        image: { type: String, required: true },
+        quantity: { type: Number, default: 1 },
       },
     ],
     subtotal: Number,
