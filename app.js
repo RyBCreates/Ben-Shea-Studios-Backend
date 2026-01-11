@@ -27,7 +27,11 @@ app.use(express.json());
 const allowedOrigins =
   process.env.NODE_ENV === "development"
     ? ["http://localhost:5173"]
-    : ["https://bensheastudio.com", "https://www.bensheastudio.com"];
+    : [
+        "https://bensheastudio.com",
+        "https://www.bensheastudio.com",
+        "https://ben-shea-studios.vercel.app",
+      ];
 
 app.use(
   cors({
